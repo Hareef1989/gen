@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>บันทึกการใช้เครื่องปั่นไฟ</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f1f4f8;--card:#fff;--tx:#16212c;--mu:#52606d;--bd:#e0e5eb;--ac:#0b7285;--on:#fff;--sf:#eaf0f5;--sh:0 1.5px 7px rgba(20,35,55,.08);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151a;--card:#1a2129;--tx:#eef2f6;--mu:#a5b0bc;--bd:#2b343e;--sf:#232c35;--sh:none}}
+:root[data-theme="dark"]{--bg:#10151a;--card:#1a2129;--tx:#eef2f6;--mu:#a5b0bc;--bd:#2b343e;--sf:#232c35;--sh:none}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:11.9px/1.5 system-ui,"Noto Sans Thai","Sarabun",sans-serif}
+.wrap{max-width:532px;margin:0 auto;padding:9.8px 9.8px 77px}
+.head{display:flex;justify-content:space-between;align-items:center;gap:7px;margin-bottom:8.4px}
+h1{font-size:15.4px;margin:0;line-height:1.25}.sub{color:var(--mu);font-size:9.8px;margin:1.5px 0 0}
+.gear{flex:none;width:33.6px;height:33.6px;border-radius:9.8px;border:1px solid var(--bd);background:var(--card);font-size:15.4px;box-shadow:var(--sh)}
+.tabs{display:flex;gap:5.6px;overflow-x:auto;padding:1.5px 1.5px 7px;scrollbar-width:none}
+.tab{flex:none;display:flex;align-items:center;gap:5.6px;border:1.5px solid var(--bd);background:var(--card);color:var(--tx);border-radius:699.3px;padding:6.3px 11.2px;font:inherit;font-size:11.2px;font-weight:600;box-shadow:var(--sh)}
+.tab i{width:8.4px;height:8.4px;border-radius:50%;background:var(--c)}
+.tab.on{background:var(--c);border-color:var(--c);color:#fff}.tab.on i{background:#fff}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:2.8px 0 8.4px}
+.stat{background:var(--card);border-radius:11.2px;padding:9.1px 9.8px;box-shadow:var(--sh);border:1px solid var(--bd)}
+.stat b{display:block;font-size:16.8px;line-height:1.2}.stat span{color:var(--mu);font-size:9.8px}
+.stat em{font-style:normal;font-size:14px;display:block;margin-bottom:1.5px}
+.hint{background:var(--sf);border-left:3.5px solid var(--ac);border-radius:8.4px;padding:7px 9.8px;font-size:10.5px;margin-bottom:8.4px}
+.bar{display:flex;gap:7px;margin-bottom:8.4px}
+input,select{width:100%;font:inherit;font-size:11.9px;color:var(--tx);background:var(--card);border:1.5px solid var(--bd);border-radius:9.8px;padding:8.4px 9.8px;min-height:35px}
+input:focus,select:focus{outline:none;border-color:var(--ac)}
+.btn{border:1.5px solid var(--bd);border-radius:9.8px;padding:8.4px 11.2px;font:inherit;font-weight:600;background:var(--card);color:var(--tx);min-height:35px;white-space:nowrap}
+.card{background:var(--card);border-radius:11.2px;border-left:4.9px solid var(--c);padding:9.1px 10.5px;margin-bottom:7px;box-shadow:var(--sh);border-top:1px solid var(--bd);border-right:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.card .t{display:flex;justify-content:space-between;align-items:flex-start;gap:7px}
+.ttl{font-size:12.6px;font-weight:700;line-height:1.3}.lc{margin-right:4.2px}
+.dt{color:var(--mu);font-size:10.5px;white-space:nowrap}
+.card .m{font-size:11.2px;margin-top:3.5px}.card .s{color:var(--mu);font-size:10.5px;margin-top:2.8px}
+.tag{display:inline-block;font-size:9.8px;font-weight:700;border-radius:5.6px;padding:1.5px 7px;background:var(--c);color:#fff;margin-bottom:4.2px}
+.empty{text-align:center;color:var(--mu);padding:25.2px 5.6px;font-size:12.6px}
+.fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(11.2px + env(safe-area-inset-bottom,0px));background:var(--ac);color:var(--on);border:0;border-radius:699.3px;padding:11.2px 22.4px;font:inherit;font-weight:700;font-size:13.3px;box-shadow:0 5.6px 15.4px rgba(0,0,0,.28);white-space:nowrap}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:5}
+.ov.on{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:532px;max-height:94%;overflow:auto;border-radius:16.8px 16.8px 0 0;border-top:5.6px solid var(--ac);padding:11.2px 11.2px calc(14px + env(safe-area-inset-bottom,0px))}
+.sheet h2{margin:0 0 4.2px;font-size:14.7px}
+label{display:block;font-size:10.5px;font-weight:600;margin:8.4px 0 3.5px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.calc{background:var(--sf);border-radius:9.8px;padding:8.4px 9.8px;margin-top:8.4px;font-size:11.2px;font-weight:600}
+.chk{display:flex;gap:8.4px;align-items:center;margin:8.4px 0 1.5px;font-size:11.9px;font-weight:600;background:var(--card);border:1.5px solid var(--bd);border-radius:9.8px;padding:8.4px 9.8px}
+.chk input{width:16.8px;height:16.8px;min-height:0;accent-color:var(--ac)}
+.act{display:flex;gap:7px;margin-top:12.6px}.act .btn{flex:1}.pri{background:var(--ac);color:var(--on);border-color:var(--ac);flex:2!important;font-size:12.6px}
+.toast{position:fixed;top:calc(9.8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:#1d2b36;color:#fff;border-radius:8.4px;padding:7.7px 14px;font-size:11.2px;z-index:9;display:none}
+.seg{display:flex;gap:5.6px;margin-bottom:8.4px}
+.seg button{flex:1;border:1.5px solid var(--bd);background:var(--card);color:var(--tx);border-radius:9.8px;padding:7.7px 5.6px;font:inherit;font-size:11.2px;font-weight:700;box-shadow:var(--sh)}
+.seg button.on{background:var(--ac);border-color:var(--ac);color:var(--on)}
+.chips{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:8.4px 0}
+.chip{text-align:left;border:1.5px solid var(--c);border-left-width:4.9px;background:var(--card);color:var(--tx);border-radius:9.8px;padding:7px 8.4px;font:inherit}
+.chip b{display:block;font-size:11.9px}.chip span{font-size:9.8px;color:var(--mu)}
+.chip.done{background:var(--c)}.chip.done b,.chip.done span{color:#fff}
+.bad{color:#e03131;font-weight:600}
+#ck_items .chk{margin:4.2px 0 0}
+.today{font-size:13px;font-weight:600;color:var(--ac);margin-top:2px}#fbar>*{flex:1}#fbar #fmode{flex:0 0 38%}
+</style></head><body>
+<div class="wrap">
+  <div class="head"><div><h1>⚡ บันทึกการใช้เครื่องปั่นไฟ</h1><div class="today" id="today"></div><p class="sub" id="mode">กำลังโหลดข้อมูล…</p></div></div>
+  <div class="seg" id="seg"><button data-v="use" class="on">📋 บันทึกการใช้งาน</button><button data-v="chk">🔧 ตรวจเช็กรายเดือน</button></div>
+  <div class="tabs" id="tabs"></div>
+  <div id="usev">
+  <div class="bar" id="fbar"><select id="fmode"><option value="all">📅 ทุกวัน</option><option value="day">เฉพาะวัน</option><option value="mon">เฉพาะเดือน</option><option value="yr">เฉพาะปี</option></select><input type="date" id="fday" style="display:none"><input type="month" id="fmon" style="display:none"><select id="fyr" style="display:none"></select></div>
+  <div class="sub" id="fcap" style="margin:-4px 2px 8px"></div>
+  <div class="grid" id="stats"></div>
+  <div class="hint" id="hint" style="display:none">⚠️ ชั่วโมงทำงานสะสมครบ 50–100 ชม. ให้เปลี่ยนถ่ายน้ำมันเครื่อง</div></div>
+  <div id="chkv" style="display:none"><label style="margin-top:0">เดือนที่ตรวจ</label><input type="month" id="mon"><div class="chips" id="chips"></div></div>
+  <div class="bar"><input id="q" type="search" placeholder="🔍 ค้นหา JB / สถานที่ / ทีม"><button class="btn" id="xl">📥 Excel</button></div>
+  <div id="list"></div>
+</div>
+<button class="fab" id="add">＋ บันทึกการใช้งาน</button>
+
+<div class="ov" id="ov"><div class="sheet" id="sheet">
+  <h2 id="ft">บันทึกการใช้งาน</h2>
+  <div class="r2">
+    <div><label>พื้นที่</label><select id="f_area"></select></div>
+    <div><label>วันที่ใช้</label><input type="date" id="f_date"></div>
+  </div>
+  <label class="chk" id="fillrow"><input type="checkbox" id="f_fill"> ⛽ เติมน้ำมันอย่างเดียว</label>
+  <div class="r2">
+      <div><label>เลข JB</label><input id="f_jb" placeholder="JB26-xxxxxxx"></div>
+      <div><label>Location</label><input id="f_loc" placeholder="9802-53"></div>
+    </div>
+    <label>ชื่อสถานที่ / Node</label><input id="f_node" placeholder="เช่น ชุมสายออมทอง">
+  <div id="run">
+    <div class="r2">
+      <div><label>เวลาเริ่ม</label><input type="time" id="f_s"></div>
+      <div><label>เวลาสิ้นสุด</label><input type="time" id="f_e"></div>
+    </div>
+    <div class="calc" id="calc"></div>
+  </div>
+  <label>ทีม</label><input id="f_team" placeholder="เช่น RON-YLA007">
+  <label>ประเภทน้ำมัน</label><select id="f_fuel"><option value="">เลือกประเภทน้ำมัน</option><option>แก๊สโซฮอล์ 95</option><option>แก๊สโซฮอล์ 91</option><option>ดีเซล</option><option>อื่นๆ</option></select>
+  <div class="r2">
+    <div><label>เติมกี่ลิตร</label><input type="number" inputmode="decimal" step="0.01" id="f_fl"></div>
+    <div><label>จำนวนกี่บาท</label><input type="number" inputmode="decimal" step="0.01" id="f_amt"></div>
+  </div>
+  <div id="lvlrow" style="display:none"><label>🛢️ ปริมาณน้ำมันล่าสุด</label><div class="r2"><input type="number" inputmode="decimal" step="0.1" id="f_lv" placeholder="เช่น 85"><select id="f_lu"><option value="%">% (เปอร์เซ็นต์ถัง)</option><option value="ลิตร">ลิตร</option></select></div></div>
+  <label>หมายเหตุ</label><input id="f_note" placeholder="เช่น เหลือแกลลอน 20 ลิตร">
+  <div class="act"><button class="btn" id="cancel">ยกเลิก</button><button class="btn" id="del" style="display:none;color:#e03131">ลบ</button><button class="btn pri" id="save">บันทึก</button></div>
+</div></div>
+
+<div class="ov" id="ov3"><div class="sheet" id="sheet3">
+  <h2 id="ct">แบบตรวจเช็กเครื่องปั่นไฟ</h2>
+  <div class="r2"><div><label>พื้นที่</label><select id="c_area"></select></div><div><label>วันที่ตรวจ</label><input type="date" id="c_date"></div></div>
+  <div class="r2"><div><label>ชื่อผู้ตรวจ</label><input id="c_insp"></div><div><label>ชั่วโมงสะสม</label><input type="number" inputmode="decimal" step="0.1" id="c_hours"></div></div>
+  <label>ระดับน้ำมัน (%)</label><input type="number" inputmode="numeric" min="0" max="100" id="c_level" placeholder="เช่น 100">
+  <label>รายการตรวจเช็ก</label><div id="ck_items"></div>
+  <button class="btn" id="c_all" type="button" style="margin-top:10px;width:100%">✓ ปกติทั้งหมด</button>
+  <label class="chk" style="margin-top:12px"><input type="checkbox" id="c_oil"> 🛢️ เปลี่ยนน้ำมันเครื่องแล้ว</label>
+  <label>สรุปผลดำเนินการ</label><input id="c_sum" placeholder="เช่น ทุกอย่างปกติ / เปลี่ยนน้ำมันเครื่อง">
+  <div class="calc" id="c_info"></div>
+  <div class="act"><button class="btn" id="c_cancel">ยกเลิก</button><button class="btn" id="c_del" style="display:none;color:#e03131">ลบ</button><button class="btn pri" id="c_save">บันทึก</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const AREAS=["ปัตตานี","ยะลา","นราธิวาส","เบตง","ชุมสาย"];
+const COL={"ทั้งหมด":"#0b7285","ปัตตานี":"#2b8a3e","ยะลา":"#1971c2","นราธิวาส":"#862e9c","เบตง":"#d9480f","ชุมสาย":"#c2255c"};
+const MON=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+let RATE=1.45,rows=[],chk=[],view="use",month=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,7),area="ทั้งหมด",q="",editId=null,editCid=null,col=null,col2=null,ready=false;
+const $=s=>document.querySelector(s);
+const fmt=(n,d=1)=>Number(n||0).toLocaleString("th-TH",{maximumFractionDigits:d});
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const mins=(s,e)=>{if(!s||!e)return 0;const[a,b]=s.split(":").map(Number),[c,d]=e.split(":").map(Number);let m=c*60+d-a*60-b;return m<0?m+1440:m};
+const hm=m=>m>=60?Math.floor(m/60)+" ชม. "+(m%60)+" นาที":m+" นาที";
+const dstr=s=>{const[y,m,d]=(s||"").split("-");return d?`${+d} ${MON[m-1]} ${+y+543}`:""};
+const usedOf=r=>r.used!=null?r.used:(r.minutes||0)/60*RATE;
+const toast=t=>{const e=$("#toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",2200)};
+const LS="gen-usage-v1";
+const lsLoad=()=>{try{return JSON.parse(localStorage.getItem(LS)||"[]")}catch(e){return[]}};
+const lsSave=()=>{try{localStorage.setItem(LS,JSON.stringify(rows))}catch(e){}};
+
+const SB="https://pxnpfihzbjaanhthhhwy.supabase.co/rest/v1",KEY="sb_publishable_Xwic0txHbgO3WHZoTWFm_g_Vojo0NU7";
+const HD={apikey:KEY,"Content-Type":"application/json"};
+const uid=()=>crypto.randomUUID?crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==="x"?r:r&3|8).toString(16)});
+const num=v=>v===""||v==null?null:+v;
+const U={t:"gen_usage",
+  to:r=>({area:r.area,use_date:r.date,fill_only:!!r.fillOnly,jb:r.jb||"",loc:r.loc||"",node:r.node||"",start_t:r.start||"",end_t:r.end||"",minutes:r.minutes||0,rate:r.rate||1.45,used:r.used||0,team:r.team||"",fuel:r.fuel||"",filled:r.filled||0,amount:r.amount||0,note:r.note||"",lvl:r.lvl??null,lvl_unit:r.lvlUnit||"%",created_at:new Date(r.ts||Date.now()).toISOString()}),
+  from:r=>({id:r.id,area:r.area,date:r.use_date,fillOnly:r.fill_only,jb:r.jb,loc:r.loc,node:r.node,start:r.start_t,end:r.end_t,minutes:r.minutes,rate:+r.rate,used:+r.used,team:r.team,fuel:r.fuel,filled:+r.filled,amount:+r.amount,note:r.note,lvl:r.lvl==null?null:+r.lvl,lvlUnit:r.lvl_unit,ts:Date.parse(r.created_at)})};
+const C={t:"gen_checks",
+  to:r=>({area:r.area,check_date:r.date,month:r.month,inspector:r.inspector||"",hours:num(r.hours),level:num(r.level),ck:r.ck||[],oil:!!r.oil,summary:r.summary||"",created_at:new Date(r.ts||Date.now()).toISOString()}),
+  from:r=>({id:r.id,area:r.area,date:r.check_date,month:r.month,inspector:r.inspector,hours:r.hours==null?"":+r.hours,level:r.level==null?"":+r.level,ck:r.ck||[],oil:r.oil,summary:r.summary,ts:Date.parse(r.created_at)})};
+async function sb(path,opt){const r=await fetch(SB+"/"+path,{...opt,headers:{...HD,...(opt&&opt.headers)}});if(!r.ok)throw new Error("HTTP "+r.status);return r}
+async function loadAll(m){const out=[];for(let o=0;;o+=1000){const j=await(await sb(`${m.t}?select=*&order=created_at.asc&limit=1000&offset=${o}`)).json();out.push(...j);if(j.length<1000)break}return out.map(m.from)}
+function mkCol(m){return{doc:id=>({
+  async set(rec){await sb(m.t+"?on_conflict=id",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify({id,...m.to(rec)})});await refreshAll()},
+  async delete(){await sb(`${m.t}?id=eq.${encodeURIComponent(id)}`,{method:"DELETE"});await refreshAll()}})}}
+col=mkCol(U);col2=mkCol(C);
+let busy=false;
+async function refreshAll(){
+  if(busy)return;busy=true;
+  try{const[a,b]=await Promise.all([loadAll(U),loadAll(C)]);rows=a;chk=b;ready=true;$("#mode").textContent="ข้อมูลแชร์ร่วมกันทุกคน (Supabase) | by Hareef";render()}
+  catch(e){$("#mode").textContent="⚠️ เชื่อมต่อฐานข้อมูลไม่ได้ กำลังลองใหม่…"}
+  finally{busy=false}
+}
+refreshAll();setInterval(()=>{if(!document.hidden)refreshAll()},10000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshAll()});
+
+function render(){
+  if(view==="chk"&&area==="ชุมสาย")area="ทั้งหมด";
+  document.documentElement.style.setProperty("--ac",COL[area]);
+  $("#tabs").innerHTML=["ทั้งหมด",...(view==="chk"?CAREAS:AREAS)].map(a=>`<button class="tab ${a===area?"on":""}" data-a="${a}" style="--c:${COL[a]}"><i></i>${a}</button>`).join("");
+  document.querySelectorAll("#seg button").forEach(b=>b.classList.toggle("on",b.dataset.v===view));
+  $("#usev").style.display=view==="use"?"block":"none";$("#chkv").style.display=view==="chk"?"block":"none";
+  $("#add").textContent=view==="use"?"＋ บันทึกการใช้งาน":"＋ บันทึกการตรวจเช็ก";
+  view==="use"?renderUse():renderChk();
+}
+function renderUse(){
+  const k=q.trim().toLowerCase();
+  const list=rows.filter(r=>inF(r)&&(area==="ทั้งหมด"||r.area===area)&&(!k||[r.jb,r.loc,r.node,r.team,r.fuel,r.note].join(" ").toLowerCase().includes(k)))
+    .sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.ts||0)-(a.ts||0));
+  $("#fday").style.display=fmode==="day"?"":"none";$("#fmon").style.display=fmode==="mon"?"":"none";$("#fyr").style.display=fmode==="yr"?"":"none";
+  $("#fmode").value=fmode;$("#fday").value=fday;$("#fmon").value=fmon;
+  const cy=todayS().slice(0,4),ys=[...new Set([...rows.map(r=>(r.date||"").slice(0,4)),cy,fyr])].filter(Boolean).sort().reverse();
+  $("#fyr").innerHTML=ys.map(y=>`<option value="${y}">พ.ศ. ${+y+543}</option>`).join("");$("#fyr").value=fyr||cy;
+  const lab=fmode==="day"?dstr(fday):fmode==="mon"?(fmon?`${MON[+fmon.slice(5)-1]} ${+fmon.slice(0,4)+543}`:""):fmode==="yr"?`ปี ${+fyr+543}`:"";
+  $("#fcap").textContent=fmode==="all"?"":`🔎 แสดงเฉพาะ ${lab} · ${list.length} รายการ`;
+  const m=list.reduce((s,r)=>s+(r.minutes||0),0),used=list.reduce((s,r)=>s+usedOf(r),0);
+  const fill=list.reduce((s,r)=>s+(+r.filled||0),0),amt=list.reduce((s,r)=>s+(+r.amount||0),0),n=list.filter(r=>!r.fillOnly).length;
+  $("#stats").innerHTML=(area==="ชุมสาย"?SM(list,fill,amt):[["🔢",n+" ครั้ง","จำนวนครั้งที่ใช้งาน"],["⏱️",fmt(m/60,1)+" ชม.","เวลาเดินเครื่องรวม"],["⛽",fmt(used,1)+" ลิตร","น้ำมันที่ใช้ (ประมาณ)"],["💰",fmt(amt,0)+" บาท","เติมแล้ว "+fmt(fill,1)+" ลิตร"]])
+    .map(x=>`<div class="stat"><em>${x[0]}</em><b>${x[1]}</b><span>${x[2]}</span></div>`).join("");
+  const ha=area==="ทั้งหมด"?CAREAS:area==="ชุมสาย"?[]:[area];
+  if(ha.length){const hv=ha.map(a=>({a,h:hrs(a)}));
+    $("#hint").innerHTML="⏱️ <b>ชั่วโมงสะสมหลังเปลี่ยนน้ำมันเครื่องล่าสุด</b><br>"+hv.map(x=>`${x.h>=50?"⚠️ ":""}${x.a} ${fmt(x.h,1)} ชม.`).join(" · ")+(hv.some(x=>x.h>=50)?"<br>⚠️ ครบ 50 ชม. ควรเปลี่ยนถ่ายน้ำมันเครื่อง":"");
+    $("#hint").style.display="block"}else $("#hint").style.display="none";
+  $("#list").innerHTML=!ready?'<div class="empty">กำลังโหลด…</div>':list.length?list.map(r=>`
+    <div class="card" data-id="${r.id}" style="--c:${COL[r.area]||COL["ทั้งหมด"]}">
+      <span class="tag">${esc(r.area)}</span>
+      <div class="t"><div class="ttl">${r.loc||r.node?`${r.loc?`<span class="lc">${esc(r.loc)}</span>`:""}${esc(r.node)}`:"⛽ เติมน้ำมันอย่างเดียว"}</div><div class="dt">${dstr(r.date)}</div></div>
+      ${r.fillOnly?"":`<div class="m">🕐 ${esc(r.start)}–${esc(r.end)} · ${hm(r.minutes||0)} · ใช้น้ำมัน ${fmt(usedOf(r),2)} ลิตร</div>`}
+      ${r.filled||r.amount?`<div class="m">⛽ เติม ${fmt(r.filled,1)} ลิตร${r.fuel?` (${esc(r.fuel)})`:""} · ${fmt(r.amount,0)} บาท</div>`:""}
+      ${r.lvl!=null&&r.lvl!==""?`<div class="m">🛢️ ปริมาณน้ำมันล่าสุด ${fmt(r.lvl,1)} ${esc(r.lvlUnit||"%")}</div>`:""}
+      <div class="s">${[r.team,r.jb].filter(Boolean).map(esc).join(" · ")}</div>${r.note?`<div class="s">📝 ${esc(r.note)}</div>`:""}
+    </div>`).join(""):(fmode!=="all"?'<div class="empty">ไม่พบรายการในช่วงเวลาที่เลือก</div>':'<div class="empty">ยังไม่มีรายการ<br>กดปุ่ม ＋ ด้านล่างเพื่อบันทึก</div>');
+}
+$("#tabs").onclick=e=>{const b=e.target.closest(".tab");if(b){area=b.dataset.a;render()}};
+$("#q").oninput=e=>{q=e.target.value;render()};
+$("#list").onclick=e=>{const c=e.target.closest(".card");if(c)c.dataset.cid?openChk(c.dataset.cid):openForm(c.dataset.id)};
+$("#add").onclick=()=>view==="use"?openForm(null):openChk(null);
+$("#cancel").onclick=()=>$("#ov").classList.remove("on");
+$("#ov").onclick=e=>{if(e.target.id==="ov")e.target.classList.remove("on")};
+$("#f_area").innerHTML=AREAS.map(a=>`<option>${a}</option>`).join("");
+$("#f_area").onchange=()=>{$("#sheet").style.setProperty("--ac",COL[$("#f_area").value]);calc()};
+
+const F=["jb","loc","node","s","e","team","fuel","fl","amt","note"];
+function calc(){const fo=$("#f_fill").checked,sm=$("#f_area").value==="ชุมสาย";$("#fillrow").style.display=sm?"none":"";$("#lvlrow").style.display=sm?"block":"none";$("#run").style.display=(fo||sm)?"none":"block";const m=mins($("#f_s").value,$("#f_e").value);
+  $("#calc").textContent=`⏱️ ${hm(m)} · ⛽ ใช้น้ำมัน ≈ ${fmt(m/60*RATE,2)} ลิตร`}
+["f_fill","f_s","f_e"].forEach(i=>$("#"+i).addEventListener("input",calc));
+
+function openForm(id){
+  editId=id;const r=rows.find(x=>x.id===id)||{};
+  $("#ft").textContent=id?"แก้ไขรายการ":"บันทึกการใช้งาน";
+  let last="";try{last=localStorage.getItem("gen-last-area")||""}catch(e){}
+  $("#f_area").value=r.area||(area!=="ทั้งหมด"?area:last||AREAS[0]);$("#f_area").onchange();
+  $("#f_date").value=r.date||new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+  $("#f_fill").checked=!!r.fillOnly;
+  const v={jb:r.jb,loc:r.loc,node:r.node,s:r.start,e:r.end,team:r.team,fuel:r.fuel,fl:r.filled,amt:r.amount,note:r.note};
+  F.forEach(k=>$("#f_"+k).value=v[k]??"");$("#f_lv").value=r.lvl??"";$("#f_lu").value=r.lvlUnit||"%";
+  $("#del").style.display=id?"block":"none";calc();$("#ov").classList.add("on");
+}
+$("#save").onclick=async()=>{
+  const sm=$("#f_area").value==="ชุมสาย",fo=sm||$("#f_fill").checked,s=sm?"":$("#f_s").value,e=sm?"":$("#f_e").value;
+  if(!fo&&(!s||!e))return toast("กรุณาใส่เวลาเริ่มและสิ้นสุด");
+  if(fo&&!(+$("#f_fl").value)&&!(sm&&$("#f_lv").value!==""))return toast(sm?"กรุณาใส่ปริมาณน้ำมันล่าสุดหรือจำนวนที่เติม":"กรุณาใส่จำนวนน้ำมันที่เติม");
+  const old=rows.find(x=>x.id===editId)||{},mn=fo?0:mins(s,e),rate=old.rate||RATE;
+  const rec={area:$("#f_area").value,date:$("#f_date").value,fillOnly:fo,jb:$("#f_jb").value.trim(),loc:$("#f_loc").value.trim(),node:$("#f_node").value.trim(),
+    start:fo?"":s,end:fo?"":e,minutes:mn,rate,used:+(mn/60*rate).toFixed(3),team:$("#f_team").value.trim(),fuel:$("#f_fuel").value,
+    filled:+$("#f_fl").value||0,amount:+$("#f_amt").value||0,note:$("#f_note").value.trim(),lvl:sm&&$("#f_lv").value!==""?+$("#f_lv").value:null,lvlUnit:$("#f_lu").value,ts:old.ts||Date.now()};
+  const id=editId||uid();
+  try{
+    if(col)await col.doc(id).set(rec);
+    else{const o={...rec,id},i=rows.findIndex(x=>x.id===id);i<0?rows.push(o):rows[i]=o;lsSave();render()}
+    try{localStorage.setItem("gen-last-area",rec.area)}catch(e){}
+    $("#ov").classList.remove("on");toast("บันทึกแล้ว ✓");
+  }catch(err){toast("บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง")}
+};
+$("#del").onclick=async()=>{
+  if(!confirm("ลบรายการนี้?"))return;
+  try{if(col)await col.doc(editId).delete();else{rows=rows.filter(x=>x.id!==editId);lsSave();render()}
+    $("#ov").classList.remove("on");toast("ลบแล้ว")}catch(e){toast("ลบไม่สำเร็จ")}
+};
+const DAYS=["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"],MONF=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+function setToday(){const d=new Date();$("#today").textContent=`📅 วัน${DAYS[d.getDay()]}ที่ ${d.getDate()} ${MONF[d.getMonth()]} พ.ศ. ${d.getFullYear()+543}`}
+setToday();document.addEventListener("visibilitychange",setToday);
+let fmode="all",fday="",fmon="",fyr="";
+const inF=r=>fmode==="all"||(fmode==="day"?r.date===fday:fmode==="mon"?(r.date||"").startsWith(fmon):(r.date||"").startsWith(fyr));
+$("#fmode").onchange=e=>{fmode=e.target.value;const t=todayS();if(fmode==="day"&&!fday)fday=t;if(fmode==="mon"&&!fmon)fmon=t.slice(0,7);if(fmode==="yr"&&!fyr)fyr=t.slice(0,4);render()};
+$("#fday").onchange=e=>{fday=e.target.value;render()};
+$("#fmon").onchange=e=>{fmon=e.target.value;render()};
+$("#fyr").onchange=e=>{fyr=e.target.value;render()};
+const SM=(list,fill,amt)=>{const L=list.find(r=>r.lvl!=null&&r.lvl!=="");return[["🔢",list.length+" ครั้ง","จำนวนครั้งที่บันทึก"],["🛢️",L?fmt(L.lvl,1)+" "+(L.lvlUnit||"%"):"-","ปริมาณน้ำมันล่าสุด"+(L?" ("+dstr(L.date)+")":"")],["⛽",fmt(fill,1)+" ลิตร","น้ำมันที่เติมรวม"],["💰",fmt(amt,0)+" บาท","จำนวนเงินรวม"]]};
+const CAREAS=AREAS.filter(a=>a!=="ชุมสาย");
+const ITEMS=["ทำความสะอาดภายนอก","ตรวจจุดยึดและน๊อต","เช็คระบบเชื้อเพลิง","ทดสอบรันเครื่อง 10-15 นาที","ทดสอบการจ่ายไฟ","วัดแรงดันไฟ 220 V","ตรวจกรองอากาศ","ตรวจน้ำมันเครื่อง","ตรวจหัวเทียน"];
+const LS2="gen-checks-v1";
+const ls2Load=()=>{try{return JSON.parse(localStorage.getItem(LS2)||"[]")}catch(e){return[]}};
+const ls2Save=()=>{try{localStorage.setItem(LS2,JSON.stringify(chk))}catch(e){}};
+const todayS=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const lastChk=a=>chk.filter(c=>c.area===a&&c.oil).reduce((m,c)=>(c.date||"")>m?c.date:m,"");
+const hrs=a=>{const l=lastChk(a);return Math.round(rows.filter(r=>r.area===a&&(!l||(r.date||"")>l)).reduce((s,r)=>s+(r.minutes||0),0)/60*10)/10};
+$("#ck_items").innerHTML=ITEMS.map((t,i)=>`<label class="chk"><input type="checkbox" data-i="${i}"> ${t}</label>`).join("");
+$("#c_area").innerHTML=CAREAS.map(a=>`<option>${a}</option>`).join("");
+$("#c_area").onchange=()=>{const a=$("#c_area").value;$("#sheet3").style.setProperty("--ac",COL[a]);if(!editCid)$("#c_hours").value=hrs(a)};
+$("#c_all").onclick=()=>document.querySelectorAll("#ck_items input").forEach(x=>x.checked=true);
+function oilInfo(){$("#c_info").textContent=$("#c_oil").checked?"♻️ เมื่อบันทึก ชั่วโมงสะสมของพื้นที่นี้จะเริ่มนับใหม่จาก 0":"ℹ️ ไม่ได้เปลี่ยนน้ำมันเครื่อง ชั่วโมงสะสมจะนับต่อไป"}
+$("#c_oil").onchange=oilInfo;
+$("#c_cancel").onclick=()=>$("#ov3").classList.remove("on");
+$("#ov3").onclick=e=>{if(e.target.id==="ov3")e.target.classList.remove("on")};
+$("#seg").onclick=e=>{const b=e.target.closest("button");if(b){view=b.dataset.v;render()}};
+$("#mon").onchange=e=>{month=e.target.value||month;render()};
+$("#chips").onclick=e=>{const b=e.target.closest(".chip");if(b)openChk(b.dataset.id||null,b.dataset.a)};
+function renderChk(){
+  $("#mon").value=month;
+  const m=chk.filter(c=>c.month===month);
+  $("#chips").innerHTML=CAREAS.map(a=>{const c=m.find(x=>x.area===a);return `<button class="chip ${c?"done":""}" data-a="${a}" data-id="${c?c.id:""}" style="--c:${COL[a]}"><b>${a}</b><span>${c?"✓ ตรวจแล้ว "+dstr(c.date):"ยังไม่ตรวจ · แตะเพื่อบันทึก"}<br>⏱️ สะสม ${fmt(hrs(a),1)} ชม.</span></button>`}).join("");
+  const k=q.trim().toLowerCase();
+  const list=m.filter(c=>(area==="ทั้งหมด"||c.area===area)&&(!k||[c.inspector,c.summary].join(" ").toLowerCase().includes(k))).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  $("#list").innerHTML=!ready?'<div class="empty">กำลังโหลด…</div>':list.length?list.map(c=>{
+    const ck=c.ck||[],ok=ck.filter(Boolean).length,bad=ITEMS.filter((t,i)=>!ck[i]);
+    return `<div class="card" data-cid="${c.id}" style="--c:${COL[c.area]||COL["ทั้งหมด"]}"><span class="tag">${esc(c.area)}</span>
+      <div class="t"><div class="ttl">🔧 ตรวจเช็กเครื่องปั่นไฟ</div><div class="dt">${dstr(c.date)}</div></div>
+      <div class="m">ผ่าน ${ok}/${ITEMS.length} รายการ${c.oil?" · 🛢️ เปลี่ยนน้ำมันเครื่อง":""}${c.level!==""&&c.level!=null?` · น้ำมัน ${fmt(c.level,0)}%`:""}${c.hours!==""&&c.hours!=null?` · สะสม ${fmt(c.hours,1)} ชม.`:""}</div>
+      ${bad.length?`<div class="m bad">⚠️ ยังไม่ผ่าน: ${bad.map(esc).join(", ")}</div>`:""}
+      <div class="s">👤 ${esc(c.inspector)}</div>${c.summary?`<div class="s">📝 ${esc(c.summary)}</div>`:""}</div>`}).join(""):'<div class="empty">ยังไม่มีรายการตรวจเช็กในเดือนนี้<br>แตะชื่อพื้นที่ด้านบนหรือปุ่ม ＋ เพื่อบันทึก</div>';
+}
+function openChk(id,a){
+  editCid=id;const r=chk.find(x=>x.id===id)||{};
+  $("#ct").textContent=id?"แก้ไขการตรวจเช็ก":"แบบตรวจเช็กเครื่องปั่นไฟ";
+  const ar=r.area||a||(area!=="ทั้งหมด"?area:CAREAS[0]);
+  $("#c_area").value=ar;$("#sheet3").style.setProperty("--ac",COL[ar]);
+  $("#c_date").value=r.date||(month===todayS().slice(0,7)?todayS():month+"-01");
+  $("#c_insp").value=r.inspector||"";$("#c_hours").value=id?(r.hours??""):hrs(ar);$("#c_level").value=r.level??"";
+  document.querySelectorAll("#ck_items input").forEach((x,i)=>x.checked=!!(r.ck||[])[i]);
+  $("#c_oil").checked=!!r.oil;oilInfo();$("#c_sum").value=r.summary||"";$("#c_del").style.display=id?"block":"none";$("#ov3").classList.add("on");
+}
+$("#c_save").onclick=async()=>{
+  const date=$("#c_date").value,insp=$("#c_insp").value.trim();
+  if(!date)return toast("กรุณาเลือกวันที่ตรวจ");if(!insp)return toast("กรุณาใส่ชื่อผู้ตรวจ");
+  const old=chk.find(x=>x.id===editCid)||{},h=$("#c_hours").value,l=$("#c_level").value;
+  const rec={area:$("#c_area").value,date,month:date.slice(0,7),inspector:insp,hours:h===""?"":+h,level:l===""?"":+l,
+    ck:[...document.querySelectorAll("#ck_items input")].map(x=>x.checked),summary:$("#c_sum").value.trim(),oil:$("#c_oil").checked,ts:old.ts||Date.now()};
+  const id=editCid||uid();
+  try{
+    if(col2)await col2.doc(id).set(rec);
+    else{const o={...rec,id},i=chk.findIndex(x=>x.id===id);i<0?chk.push(o):chk[i]=o;ls2Save()}
+    month=rec.month;area=rec.area;$("#ov3").classList.remove("on");render();toast("บันทึกแล้ว ✓");
+  }catch(err){toast("บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง")}
+};
+$("#c_del").onclick=async()=>{
+  if(!confirm("ลบรายการตรวจเช็กนี้?"))return;
+  try{if(col2)await col2.doc(editCid).delete();else{chk=chk.filter(x=>x.id!==editCid);ls2Save()}
+    $("#ov3").classList.remove("on");render();toast("ลบแล้ว")}catch(e){toast("ลบไม่สำเร็จ")}
+};
+$("#xl").onclick=async()=>{
+  if(!window.XLSX)return toast("ส่งออก Excel ไม่พร้อมใช้งาน");
+  const H=["วันที่ใช้","เลข JB","Location","ชื่อสถานที่/Node","ทีม","เริ่ม","สิ้นสุด","ใช้เวลา (นาที)","น้ำมันที่ใช้ (ลิตร)","ประเภทน้ำมัน","เติมกี่ลิตร","จำนวนกี่บาท","หมายเหตุ","ปริมาณน้ำมันล่าสุด"];
+  const wb=XLSX.utils.book_new();
+  (area==="ทั้งหมด"?AREAS:[area]).forEach(a=>{
+    const l=rows.filter(r=>r.area===a&&inF(r)).sort((x,y)=>(x.date||"").localeCompare(y.date||"")||(x.ts||0)-(y.ts||0));
+    const aoa=[H,...l.map(r=>[r.date,r.jb,r.loc,r.fillOnly&&!r.node?"เติมน้ำมันอย่างเดียว":r.node,r.team,r.start,r.end,r.minutes,+usedOf(r).toFixed(2),r.fuel,r.filled||0,r.amount||0,r.note,r.lvl!=null?r.lvl+" "+(r.lvlUnit||"%"):""])];
+    const ws=XLSX.utils.aoa_to_sheet(aoa);ws["!cols"]=[12,14,10,26,14,8,8,12,14,16,12,12,28,18].map(w=>({wch:w}));
+    XLSX.utils.book_append_sheet(wb,ws,a);
+  });
+  const cs=chk.slice().sort((x,y)=>(x.date||"").localeCompare(y.date||"")||AREAS.indexOf(x.area)-AREAS.indexOf(y.area));
+  const w2=XLSX.utils.aoa_to_sheet([["เดือน","วันที่ตรวจ","ผู้ตรวจ","พื้นที่","ชั่วโมงสะสม","ระดับน้ำมัน (%)",...ITEMS,"เปลี่ยนน้ำมันเครื่อง","สรุปผลดำเนินการ"],...cs.map(c=>[c.month,c.date,c.inspector,c.area,c.hours,c.level,...ITEMS.map((t,i)=>(c.ck||[])[i]?"✓":"✗"),c.oil?"✓":"",c.summary])]);
+  w2["!cols"]=[9,12,14,10,12,14,...ITEMS.map(()=>16),14,30].map(w=>({wch:w}));XLSX.utils.book_append_sheet(wb,w2,"ตรวจเช็กรายเดือน");
+  try{XLSX.writeFile(wb,`รายงานเครื่องปั่นไฟ-${area}.xlsx`)}catch(e){toast("ส่งออกไม่สำเร็จ")}
+};
+render();
+</script></body></html>
